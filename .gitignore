@@ -1,0 +1,5 @@
+# Ignore Visual Studio 2008 files
+
+*.suo
+*/bin
+*/obj
