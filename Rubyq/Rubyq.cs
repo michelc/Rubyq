@@ -61,6 +61,31 @@ namespace Rubyq
             e.Cancel = !DoYouWantToSave();
         }
 
+        /// <summary>
+        /// Keyboard shorcuts
+        /// </summary>
+        private void Rubyq_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Control)
+            {
+                switch (e.KeyCode)
+                {
+                    case Keys.F5:
+                        if (Run.Enabled) FileRun();
+                        break;
+                    case Keys.N:
+                        if (New.Enabled) FileNew();
+                        break;
+                    case Keys.O:
+                        if (Open.Enabled) FileOpen();
+                        break;
+                    case Keys.S:
+                        if (Save.Enabled) FileSave();
+                        break;
+                }
+            }
+        }
+
         private void Run_Click(object sender, EventArgs e)
         {
             FileRun();

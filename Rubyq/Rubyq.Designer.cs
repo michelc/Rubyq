@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.Canvas = new System.Windows.Forms.SplitContainer();
+            this.Position = new System.Windows.Forms.Label();
             this.Shell = new System.Windows.Forms.Button();
             this.Run = new System.Windows.Forms.Button();
             this.Save = new System.Windows.Forms.Button();
@@ -38,7 +39,6 @@
             this.OutputArea = new System.Windows.Forms.RichTextBox();
             this.OpenFile = new System.Windows.Forms.OpenFileDialog();
             this.SaveFile = new System.Windows.Forms.SaveFileDialog();
-            this.Position = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).BeginInit();
             this.Canvas.Panel1.SuspendLayout();
             this.Canvas.Panel2.SuspendLayout();
@@ -69,6 +69,15 @@
             this.Canvas.Size = new System.Drawing.Size(639, 404);
             this.Canvas.SplitterDistance = 265;
             this.Canvas.TabIndex = 1;
+            // 
+            // Position
+            // 
+            this.Position.AutoSize = true;
+            this.Position.Location = new System.Drawing.Point(250, 12);
+            this.Position.Name = "Position";
+            this.Position.Size = new System.Drawing.Size(44, 13);
+            this.Position.TabIndex = 7;
+            this.Position.Text = "Position";
             // 
             // Shell
             // 
@@ -164,26 +173,19 @@
             this.OutputArea.TabIndex = 0;
             this.OutputArea.Text = "";
             // 
-            // Position
-            // 
-            this.Position.AutoSize = true;
-            this.Position.Location = new System.Drawing.Point(250, 12);
-            this.Position.Name = "Position";
-            this.Position.Size = new System.Drawing.Size(44, 13);
-            this.Position.TabIndex = 7;
-            this.Position.Text = "Position";
-            // 
             // Rubyq
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(639, 404);
             this.Controls.Add(this.Canvas);
+            this.KeyPreview = true;
             this.Name = "Rubyq";
             this.Text = "Rubyq";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Rubyq_FormClosing);
             this.Load += new System.EventHandler(this.Rubyq_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Rubyq_KeyDown);
             this.Canvas.Panel1.ResumeLayout(false);
             this.Canvas.Panel1.PerformLayout();
             this.Canvas.Panel2.ResumeLayout(false);
