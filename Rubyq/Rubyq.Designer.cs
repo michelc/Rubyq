@@ -38,6 +38,7 @@
             this.OutputArea = new System.Windows.Forms.RichTextBox();
             this.OpenFile = new System.Windows.Forms.OpenFileDialog();
             this.SaveFile = new System.Windows.Forms.SaveFileDialog();
+            this.Position = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).BeginInit();
             this.Canvas.Panel1.SuspendLayout();
             this.Canvas.Panel2.SuspendLayout();
@@ -54,6 +55,7 @@
             // 
             // Canvas.Panel1
             // 
+            this.Canvas.Panel1.Controls.Add(this.Position);
             this.Canvas.Panel1.Controls.Add(this.Shell);
             this.Canvas.Panel1.Controls.Add(this.Run);
             this.Canvas.Panel1.Controls.Add(this.Save);
@@ -143,6 +145,8 @@
             this.TextArea.TabIndex = 0;
             this.TextArea.Text = "";
             this.TextArea.TextChanged += new System.EventHandler(this.TextArea_TextChanged);
+            this.TextArea.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextArea_KeyUp);
+            this.TextArea.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TextArea_MouseUp);
             // 
             // OutputArea
             // 
@@ -160,6 +164,15 @@
             this.OutputArea.TabIndex = 0;
             this.OutputArea.Text = "";
             // 
+            // Position
+            // 
+            this.Position.AutoSize = true;
+            this.Position.Location = new System.Drawing.Point(250, 12);
+            this.Position.Name = "Position";
+            this.Position.Size = new System.Drawing.Size(44, 13);
+            this.Position.TabIndex = 7;
+            this.Position.Text = "Position";
+            // 
             // Rubyq
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -172,6 +185,7 @@
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Rubyq_FormClosing);
             this.Load += new System.EventHandler(this.Rubyq_Load);
             this.Canvas.Panel1.ResumeLayout(false);
+            this.Canvas.Panel1.PerformLayout();
             this.Canvas.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.Canvas)).EndInit();
             this.Canvas.ResumeLayout(false);
@@ -191,6 +205,7 @@
         private System.Windows.Forms.Button Run;
         private System.Windows.Forms.OpenFileDialog OpenFile;
         private System.Windows.Forms.SaveFileDialog SaveFile;
+        private System.Windows.Forms.Label Position;
 
 
 

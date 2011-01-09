@@ -86,6 +86,16 @@ namespace Rubyq
             FileSave();
         }
 
+        private void TextArea_KeyUp(object sender, KeyEventArgs e)
+        {
+            ResetPosition();
+        }
+
+        private void TextArea_MouseUp(object sender, MouseEventArgs e)
+        {
+            ResetPosition();
+        }
+
         private void TextArea_TextChanged(object sender, EventArgs e)
         {
             if (!HasChanged)
@@ -296,6 +306,14 @@ namespace Rubyq
         }
 
         /// <summary>
+        /// Display cursor position
+        /// </summary>
+        private void ResetPosition()
+        {
+            Position.Text = editor.Line.ToString() + " x " + editor.Col.ToString();
+        }
+
+        /// <summary>
         /// Ask user wether to save current text (only when it has changed)
         /// </summary>
         /// <returns>false when user has cancelled</returns>
@@ -356,6 +374,7 @@ namespace Rubyq
             editor.FileName = FileName;
             HasChanged = false;
             ResetTitle();
+            ResetPosition();
         }
 
     }

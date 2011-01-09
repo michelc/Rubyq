@@ -16,6 +16,16 @@ namespace Rubyq
             OriginalHash = this.Text.GetHashCode();
         }
 
+        public int Col
+        {
+            get
+            {
+                var index = Ctrl.SelectionStart;
+                var col = index - Ctrl.GetFirstCharIndexOfCurrentLine() + 1;
+                return col;
+            }
+        }
+
         public bool Enabled
         {
             get
@@ -57,6 +67,16 @@ namespace Rubyq
                     original = false;
                 }
                 return original;
+            }
+        }
+
+        public int Line
+        {
+            get
+            {
+                var index = Ctrl.SelectionStart;
+                var line = Ctrl.GetLineFromCharIndex(index) + 1;
+                return line;
             }
         }
 
