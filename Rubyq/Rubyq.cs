@@ -82,6 +82,13 @@ namespace Rubyq
                     case Keys.S:
                         if (Save.Enabled) FileSave();
                         break;
+                    case Keys.V:
+                        if (editor.Enabled)
+                        {
+                            editor.PasteText();
+                            e.Handled = true;
+                        }
+                        break;
                 }
             }
         }

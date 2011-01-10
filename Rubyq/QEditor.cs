@@ -87,6 +87,11 @@ namespace Rubyq
             OriginalHash = this.Text.GetHashCode();
         }
 
+        public void PasteText()
+        {
+            Ctrl.Paste(DataFormats.GetFormat(DataFormats.Text));
+        }
+
         public string Text
         {
             get
