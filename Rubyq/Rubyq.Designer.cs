@@ -35,7 +35,7 @@
             this.Save = new System.Windows.Forms.Button();
             this.Open = new System.Windows.Forms.Button();
             this.New = new System.Windows.Forms.Button();
-            this.TextArea = new System.Windows.Forms.RichTextBox();
+            this.InputArea = new System.Windows.Forms.RichTextBox();
             this.OutputArea = new System.Windows.Forms.RichTextBox();
             this.OpenFile = new System.Windows.Forms.OpenFileDialog();
             this.SaveFile = new System.Windows.Forms.SaveFileDialog();
@@ -61,7 +61,7 @@
             this.Canvas.Panel1.Controls.Add(this.Save);
             this.Canvas.Panel1.Controls.Add(this.Open);
             this.Canvas.Panel1.Controls.Add(this.New);
-            this.Canvas.Panel1.Controls.Add(this.TextArea);
+            this.Canvas.Panel1.Controls.Add(this.InputArea);
             // 
             // Canvas.Panel2
             // 
@@ -137,25 +137,25 @@
             this.New.UseVisualStyleBackColor = true;
             this.New.Click += new System.EventHandler(this.New_Click);
             // 
-            // TextArea
+            // InputArea
             // 
-            this.TextArea.AcceptsTab = true;
-            this.TextArea.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+            this.InputArea.AcceptsTab = true;
+            this.InputArea.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
-            this.TextArea.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.TextArea.DetectUrls = false;
-            this.TextArea.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.TextArea.HideSelection = false;
-            this.TextArea.Location = new System.Drawing.Point(10, 36);
-            this.TextArea.Name = "TextArea";
-            this.TextArea.ShowSelectionMargin = true;
-            this.TextArea.Size = new System.Drawing.Size(619, 226);
-            this.TextArea.TabIndex = 0;
-            this.TextArea.Text = "";
-            this.TextArea.TextChanged += new System.EventHandler(this.TextArea_TextChanged);
-            this.TextArea.KeyUp += new System.Windows.Forms.KeyEventHandler(this.TextArea_KeyUp);
-            this.TextArea.MouseUp += new System.Windows.Forms.MouseEventHandler(this.TextArea_MouseUp);
+            this.InputArea.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.InputArea.DetectUrls = false;
+            this.InputArea.Font = new System.Drawing.Font("Consolas", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.InputArea.HideSelection = false;
+            this.InputArea.Location = new System.Drawing.Point(10, 36);
+            this.InputArea.Name = "InputArea";
+            this.InputArea.ShowSelectionMargin = true;
+            this.InputArea.Size = new System.Drawing.Size(619, 226);
+            this.InputArea.TabIndex = 0;
+            this.InputArea.Text = "";
+            this.InputArea.TextChanged += new System.EventHandler(this.InputArea_TextChanged);
+            this.InputArea.KeyUp += new System.Windows.Forms.KeyEventHandler(this.InputArea_KeyUp);
+            this.InputArea.MouseUp += new System.Windows.Forms.MouseEventHandler(this.InputArea_MouseUp);
             // 
             // OutputArea
             // 
@@ -198,7 +198,7 @@
         #endregion
 
         private System.Windows.Forms.SplitContainer Canvas;
-        private System.Windows.Forms.RichTextBox TextArea;
+        private System.Windows.Forms.RichTextBox InputArea;
         private System.Windows.Forms.RichTextBox OutputArea;
         private System.Windows.Forms.Button New;
         private System.Windows.Forms.Button Open;

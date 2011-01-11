@@ -31,7 +31,7 @@ namespace Rubyq
         private void Rubyq_Load(object sender, EventArgs e)
         {
             // RichTextBox encapsulation
-            editor = new QEditor(TextArea);
+            editor = new QEditor(InputArea);
 
             // Ruby directory on my PC
             RubyDirectory = @"c:\Ruby";
@@ -118,17 +118,17 @@ namespace Rubyq
             FileSave();
         }
 
-        private void TextArea_KeyUp(object sender, KeyEventArgs e)
+        private void InputArea_KeyUp(object sender, KeyEventArgs e)
         {
             ResetPosition();
         }
 
-        private void TextArea_MouseUp(object sender, MouseEventArgs e)
+        private void InputArea_MouseUp(object sender, MouseEventArgs e)
         {
             ResetPosition();
         }
 
-        private void TextArea_TextChanged(object sender, EventArgs e)
+        private void InputArea_TextChanged(object sender, EventArgs e)
         {
             if (!HasChanged)
             {
@@ -334,7 +334,7 @@ namespace Rubyq
             {
                 OutputArea.Clear();
             }
-            TextArea.Refresh();
+            InputArea.Refresh();
         }
 
         /// <summary>
