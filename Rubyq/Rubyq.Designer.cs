@@ -140,6 +140,7 @@
             // InputArea
             // 
             this.InputArea.AcceptsTab = true;
+            this.InputArea.AllowDrop = true;
             this.InputArea.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
                         | System.Windows.Forms.AnchorStyles.Left)
                         | System.Windows.Forms.AnchorStyles.Right)));
@@ -156,6 +157,8 @@
             this.InputArea.TextChanged += new System.EventHandler(this.InputArea_TextChanged);
             this.InputArea.KeyUp += new System.Windows.Forms.KeyEventHandler(this.InputArea_KeyUp);
             this.InputArea.MouseUp += new System.Windows.Forms.MouseEventHandler(this.InputArea_MouseUp);
+            this.InputArea.DragEnter += new System.Windows.Forms.DragEventHandler(this.InputArea_DragEnter);
+            this.InputArea.DragDrop += new System.Windows.Forms.DragEventHandler(this.InputArea_DragDrop);
             // 
             // OutputArea
             // 

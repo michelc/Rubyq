@@ -77,7 +77,7 @@ namespace Rubyq
                         if (New.Enabled) FileNew();
                         break;
                     case Keys.O:
-                        if (Open.Enabled) FileOpen();
+                        if (Open.Enabled) FileOpen(null);
                         break;
                     case Keys.S:
                         if (Save.Enabled) FileSave();
@@ -85,7 +85,11 @@ namespace Rubyq
                     case Keys.V:
                         if (editor.Enabled)
                         {
-                            editor.PasteText();
+                            if (Clipboard.ContainsText())
+                            {
+                                string text = Clipboard.GetText(TextDataFormat.Text);
+                                editor.Paste(text);
+                            }
                             e.Handled = true;
                         }
                         break;
@@ -110,12 +114,34 @@ namespace Rubyq
 
         private void Open_Click(object sender, EventArgs e)
         {
-            FileOpen();
+            FileOpen(null);
         }
 
         private void Save_Click(object sender, EventArgs e)
         {
             FileSave();
+        }
+
+        private void InputArea_DragDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(DataFormats.FileDrop))
+            {
+                string[] files = e.Data.GetData(DataFormats.FileDrop) as string[];
+                if (files.Length > 0)
+                {
+                    FileOpen(files[0]);
+                }
+            }
+            else if (e.Data.GetDataPresent(DataFormats.Text))
+            {
+                var text = e.Data.GetData(DataFormats.Text) as string;
+                editor.Paste(text);
+            }
+        }
+
+        private void InputArea_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Copy;
         }
 
         private void InputArea_KeyUp(object sender, KeyEventArgs e)
@@ -243,7 +269,7 @@ namespace Rubyq
             LoadFileText(string.Empty);
         }
 
-        private void FileOpen()
+        private void FileOpen(string FileName)
         {
             editor.Focus();
 
@@ -255,12 +281,17 @@ namespace Rubyq
             }
 
             // Display open file dialog
-            OpenFile.FileName = string.Empty;
-            if (OpenFile.ShowDialog() == DialogResult.OK)
+            if (string.IsNullOrEmpty(FileName))
             {
-                // Load the selected file
-                LoadFileText(OpenFile.FileName);
+                OpenFile.FileName = string.Empty;
+                if (OpenFile.ShowDialog() == DialogResult.OK)
+                {
+                    FileName = OpenFile.FileName;
+                }
             }
+
+            // Load the selected file
+            LoadFileText(FileName);
         }
 
         private void FileSave()
