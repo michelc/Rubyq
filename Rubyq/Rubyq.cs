@@ -56,6 +56,9 @@ namespace Rubyq
         {
             editor.Focus();
 
+            // Always save current text as temp file for next running
+            File.WriteAllText(RubyqFile, editor.Text, Encoding.UTF8);
+
             // Ask for saving if current text has changed
             // (user can cancel the closing)
             e.Cancel = !DoYouWantToSave();
