@@ -56,6 +56,8 @@ namespace Rubyq
         {
             editor.Focus();
 
+            CRemoteShell.Terminate();
+            
             // Always save current text as temp file for next running
             File.WriteAllText(RubyqFile, editor.Text, Encoding.UTF8);
 
@@ -182,10 +184,95 @@ namespace Rubyq
             editor.Focus();
 
             // Freeze UI
+            // ResetForm(false);
+
+            // Save current code in temp file
+            string FileName = editor.FileName;
+            string DirName = RubyDirectory;
+            if (string.IsNullOrEmpty(FileName))
+            {
+                FileName = RubyqFile;
+            }
+            else
+            {
+                DirName = Path.GetDirectoryName(FileName);
+            }
+            File.WriteAllText(FileName, editor.Text, Encoding.UTF8);
+
+            // Execute current code
+            Rubyq.CheckForIllegalCrossThreadCalls = false;
+            // OutputArea.CheckForIllegalCrossThreadCalls = false;
+            CRemoteShell.StdError += CRemoteShell_StdError;
+            CRemoteShell.StdOut += CRemoteShell_StdOut;
+            CRemoteShell.Initialize(RubyExecutable, "-Ku " + FileName, DirName);
+            // CRemoteShell.Execute(RubyExecutable + " -Ku " + FileName);
+
+            /*
+            OutputArea.AppendText("Enter any command to execute. Type 'exit' to terminate this process:\n");
+            while (true)
+            {
+                string userInput = Console.ReadLine();
+                if (userInput == "exit")
+                    break;
+
+                CRemoteShell.Execute(userInput);
+            }
+            */
+            while (!CRemoteShell.HasExited()) { }
+
+            CRemoteShell.Terminate();
+
+            // Unfreeze UI
+            ResetForm(true);
+
+        }
+
+        private void CRemoteShell_StdOut(object sender, System.Diagnostics.DataReceivedEventArgs e)
+        {
+            if (e.Data != null)
+            {
+                string line = e.Data;
+                line = line.Replace("\n", Environment.NewLine);
+                OutputArea.SelectionColor = Color.SlateGray;
+                OutputArea.AppendText(line);
+                OutputArea.AppendText(Environment.NewLine);
+            }
+        }
+
+        private void CRemoteShell_StdError(object sender, System.Diagnostics.DataReceivedEventArgs e)
+        {
+            if (e.Data != null)
+            {
+                string line = e.Data;
+                line = line.Replace("\n", Environment.NewLine);
+                OutputArea.SelectionColor = Color.Red;
+                OutputArea.AppendText(line);
+                OutputArea.AppendText(Environment.NewLine);
+            }
+        }
+
+        /// <summary>
+        /// Execute current code
+        /// </summary>
+        private void FileRun_Ex()
+        {
+            editor.Focus();
+
+            // Freeze UI
             ResetForm(false);
 
             // Save current code in temp file
-            File.WriteAllText(RubyqFile, editor.Text, Encoding.UTF8);
+            string FileName = editor.FileName;
+            string DirName = RubyDirectory;
+            if (string.IsNullOrEmpty(FileName))
+            {
+                FileName = RubyqFile;
+            }
+            else
+            {
+                DirName = Path.GetDirectoryName(FileName);
+            }
+            File.WriteAllText(FileName, editor.Text, Encoding.UTF8);
 
             // Execute current code
             Process p = new Process();
@@ -194,9 +281,9 @@ namespace Rubyq
             p.StartInfo.RedirectStandardInput = true;
             p.StartInfo.RedirectStandardOutput = true;
             p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.WorkingDirectory = RubyDirectory;
+            p.StartInfo.WorkingDirectory = DirName;
             p.StartInfo.FileName = RubyExecutable;
-            p.StartInfo.Arguments = "-Ku " + RubyqFile;
+            p.StartInfo.Arguments = "-Ku " + FileName;
             p.Start();
 
             // Display results
