@@ -362,15 +362,14 @@ namespace Rubyq
             // Freeze UI
             ResetForm(false);
 
-            // Save current code in temp file (with no diacritics)
-            byte[] bytes = Encoding.GetEncoding(1251).GetBytes(editor.Text);
-            string text = Encoding.ASCII.GetString(bytes);
-            File.WriteAllText(RubyqFile, text, Encoding.ASCII);
+            // Save current code in temp file
+            // var encoding = Encoding.GetEncoding(1252);
+            File.WriteAllText(RubyqFile, editor.Text, Encoding.UTF8);
 
             // Create a batch file to run current code
-            var cmd = "@echo off\ntitle {1} -Ku {2}\ncd {0}\n{1} -Ku {2}\n@pause > null";
+            var cmd = "@echo off\ntitle {1} {2}\nchcp 1252 > null\ncd {0}\n{1} {2}\npause > null";
             var bat = string.Format(cmd, RubyDirectory, RubyExecutable, RubyqFile);
-            System.IO.File.WriteAllText(RubyqBat, bat.ToString(), Encoding.ASCII);
+            File.WriteAllText(RubyqBat, bat.ToString(), Encoding.ASCII);
 
             // Execute batch
             Process p = new Process();
@@ -378,7 +377,7 @@ namespace Rubyq
             p.StartInfo.FileName = RubyqBat;
             p.Start();
             p.WaitForExit();
-            
+
             // Unfreeze UI
             ResetForm(true);
         }
