@@ -43,6 +43,7 @@ namespace Rubyq
                     RedirectStandardError = true,
                     CreateNoWindow = true,
                     StandardOutputEncoding = Encoding.UTF8,
+                    StandardErrorEncoding = Encoding.UTF8,
                     UseShellExecute = false
                 },
                 EnableRaisingEvents = true
@@ -51,6 +52,7 @@ namespace Rubyq
             _process.ErrorDataReceived += StdError;
             _process.OutputDataReceived += StdOut;
             _process.Start();
+            _process.PriorityClass = ProcessPriorityClass.AboveNormal;
 
             if (StdError != null)
                 _process.BeginErrorReadLine();
@@ -88,6 +90,16 @@ namespace Rubyq
         /// </summary>
         public static void Terminate()
         {
+            if (_process == null)
+                return;
+
+            if (_process.HasExited)
+            {
+                StdOut = null;
+                StdError = null;
+                return;
+            }
+
             if (_process == null || _process.HasExited)
                 return;
 

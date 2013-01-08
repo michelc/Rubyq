@@ -154,11 +154,11 @@
             this.InputArea.Size = new System.Drawing.Size(619, 226);
             this.InputArea.TabIndex = 0;
             this.InputArea.Text = "";
+            this.InputArea.DragDrop += new System.Windows.Forms.DragEventHandler(this.InputArea_DragDrop);
+            this.InputArea.DragEnter += new System.Windows.Forms.DragEventHandler(this.InputArea_DragEnter);
             this.InputArea.TextChanged += new System.EventHandler(this.InputArea_TextChanged);
             this.InputArea.KeyUp += new System.Windows.Forms.KeyEventHandler(this.InputArea_KeyUp);
             this.InputArea.MouseUp += new System.Windows.Forms.MouseEventHandler(this.InputArea_MouseUp);
-            this.InputArea.DragEnter += new System.Windows.Forms.DragEventHandler(this.InputArea_DragEnter);
-            this.InputArea.DragDrop += new System.Windows.Forms.DragEventHandler(this.InputArea_DragDrop);
             // 
             // OutputArea
             // 
@@ -175,6 +175,7 @@
             this.OutputArea.Size = new System.Drawing.Size(619, 123);
             this.OutputArea.TabIndex = 0;
             this.OutputArea.Text = "";
+            this.OutputArea.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OutputArea_KeyDown);
             // 
             // Rubyq
             // 

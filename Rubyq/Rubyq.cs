@@ -18,6 +18,9 @@ namespace Rubyq
 
         protected bool HasChanged;
 
+        protected bool running = false;
+        protected int consoleIndex = 0;
+
         public Rubyq()
         {
             InitializeComponent();
@@ -104,7 +107,14 @@ namespace Rubyq
 
         private void Run_Click(object sender, EventArgs e)
         {
-            FileRun();
+            if (running)
+            {
+                FileStop();
+            }
+            else
+            {
+                FileRun();
+            }
         }
 
         private void Shell_Click(object sender, EventArgs e)
@@ -179,12 +189,34 @@ namespace Rubyq
         /// <summary>
         /// Execute current code
         /// </summary>
+        private void FileStop()
+        {
+            CRemoteShell.Terminate();
+
+            Run.Text = "Run";
+            running = false;
+
+            editor.Focus();
+        }
+
+        /// <summary>
+        /// Execute current code
+        /// </summary>
         private void FileRun()
         {
             editor.Focus();
 
             // Freeze UI
             // ResetForm(false);
+            running = true;
+            Run.Text = "Stop";
+
+            OutputArea.Focus();
+            if (OutputArea.TextLength > 0)
+            {
+                OutputArea.AppendText(Environment.NewLine);
+            }
+            consoleIndex = OutputArea.SelectionStart;
 
             // Save current code in temp file
             string FileName = editor.FileName;
@@ -204,7 +236,8 @@ namespace Rubyq
             // OutputArea.CheckForIllegalCrossThreadCalls = false;
             CRemoteShell.StdError += CRemoteShell_StdError;
             CRemoteShell.StdOut += CRemoteShell_StdOut;
-            CRemoteShell.Initialize(RubyExecutable, "-Ku " + FileName, DirName);
+            CRemoteShell.Initialize(RubyExecutable, " " + FileName, DirName);
+            // CRemoteShell.Initialize(RubyExecutable, "-Ku " + FileName, DirName);
             // CRemoteShell.Execute(RubyExecutable + " -Ku " + FileName);
 
             /*
@@ -218,13 +251,15 @@ namespace Rubyq
                 CRemoteShell.Execute(userInput);
             }
             */
+
+            /*
             while (!CRemoteShell.HasExited()) { }
 
             CRemoteShell.Terminate();
 
             // Unfreeze UI
             ResetForm(true);
-
+            */
         }
 
         private void CRemoteShell_StdOut(object sender, System.Diagnostics.DataReceivedEventArgs e)
@@ -233,9 +268,11 @@ namespace Rubyq
             {
                 string line = e.Data;
                 line = line.Replace("\n", Environment.NewLine);
-                OutputArea.SelectionColor = Color.SlateGray;
+                OutputArea.SelectionColor = Color.Black;
                 OutputArea.AppendText(line);
                 OutputArea.AppendText(Environment.NewLine);
+                consoleIndex = OutputArea.SelectionStart;
+                OutputArea.Refresh();
             }
         }
 
@@ -248,6 +285,8 @@ namespace Rubyq
                 OutputArea.SelectionColor = Color.Red;
                 OutputArea.AppendText(line);
                 OutputArea.AppendText(Environment.NewLine);
+                consoleIndex = OutputArea.SelectionStart;
+                OutputArea.Refresh();
             }
         }
 
@@ -528,6 +567,16 @@ namespace Rubyq
             HasChanged = false;
             ResetTitle();
             ResetPosition();
+        }
+
+        private void OutputArea_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                var gets = OutputArea.Text.Substring(consoleIndex);
+                CRemoteShell.Execute(gets);
+            }
+
         }
 
     }
