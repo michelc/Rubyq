@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Diagnostics;
-using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
@@ -17,10 +16,6 @@ namespace Rubyq
         protected QEditor editor;
 
         protected bool HasChanged;
-
-        protected bool running = false;
-        protected int consoleIndex = 0;
-        protected CRemoteShell CRemoteShell;
 
         public Rubyq()
         {
@@ -59,8 +54,6 @@ namespace Rubyq
         private void Rubyq_FormClosing(object sender, FormClosingEventArgs e)
         {
             editor.Focus();
-
-            if (CRemoteShell != null) CRemoteShell.Terminate();
             
             // Always save current text as temp file for next running
             File.WriteAllText(RubyqFile, editor.Text, Encoding.UTF8);
@@ -80,7 +73,7 @@ namespace Rubyq
                 switch (e.KeyCode)
                 {
                     case Keys.F5:
-                        if (Run.Enabled) FileRun();
+                        if (Run.Enabled) FileShell();
                         break;
                     case Keys.N:
                         if (New.Enabled) FileNew();
@@ -108,14 +101,7 @@ namespace Rubyq
 
         private void Run_Click(object sender, EventArgs e)
         {
-            if (running)
-            {
-                FileStop();
-            }
-            else
-            {
-                FileRun();
-            }
+            FileShell();
         }
 
         private void Shell_Click(object sender, EventArgs e)
@@ -190,160 +176,6 @@ namespace Rubyq
         /// <summary>
         /// Execute current code
         /// </summary>
-        private void FileStop()
-        {
-            if (CRemoteShell != null) CRemoteShell.Terminate();
-            Run.Text = "Run";
-            running = false;
-
-            editor.Focus();
-        }
-
-        /// <summary>
-        /// Execute current code
-        /// </summary>
-        private void FileRun()
-        {
-            editor.Focus();
-
-            CRemoteShell = new CRemoteShell();
-            running = true;
-            Run.Text = "Stop";
-
-            OutputArea.Focus();
-            OutputText("-----", Color.Black, true);
-
-            // Save current code in temp file
-            string FileName = editor.FileName;
-            string DirName = RubyDirectory;
-            if (string.IsNullOrEmpty(FileName))
-            {
-                FileName = RubyqFile;
-            }
-            else
-            {
-                DirName = Path.GetDirectoryName(FileName);
-            }
-            File.WriteAllText(FileName, editor.Text, Encoding.UTF8);
-
-            // Execute current code
-            Rubyq.CheckForIllegalCrossThreadCalls = false;
-            CRemoteShell.StdError += CRemoteShell_StdError;
-            CRemoteShell.StdOut += CRemoteShell_StdOut;
-            CRemoteShell.StdExit += CRemoteShell_StdExit;
-            CRemoteShell.Initialize(RubyExecutable, " " + FileName, DirName);
-
-            OutputArea.Refresh();
-        }
-
-        private void OutputText(string text, Color color, bool newLine)
-        {
-            if (newLine)
-            {
-                if (OutputArea.GetFirstCharIndexOfCurrentLine() != OutputArea.SelectionStart)
-                {
-                    OutputArea.AppendText(Environment.NewLine);
-                }
-            }
-
-            OutputArea.SelectionStart = OutputArea.Text.Length;
-            OutputArea.SelectionColor = color;
-            OutputArea.AppendText(text);
-            OutputArea.AppendText(Environment.NewLine);
-
-            OutputArea.Refresh();
-            consoleIndex = OutputArea.SelectionStart;
-        }
-
-        private void CRemoteShell_StdExit(object sender, EventArgs e)
-        {
-            System.Threading.Thread.Sleep(100);
-            OutputText("<Exécution terminée>", Color.Green, true);
-            
-            FileStop();
-        }
-
-        private void CRemoteShell_StdOut(object sender, System.Diagnostics.DataReceivedEventArgs e)
-        {
-            if (e.Data != null)
-            {
-                OutputText(e.Data, Color.Black, false);
-            }
-        }
-
-        private void CRemoteShell_StdError(object sender, System.Diagnostics.DataReceivedEventArgs e)
-        {
-            if (e.Data != null)
-            {
-                OutputText(e.Data, Color.Red, true);
-            }
-        }
-
-        /// <summary>
-        /// Execute current code
-        /// </summary>
-        private void FileRun_Ex()
-        {
-            editor.Focus();
-
-            // Freeze UI
-            ResetForm(false);
-
-            // Save current code in temp file
-            string FileName = editor.FileName;
-            string DirName = RubyDirectory;
-            if (string.IsNullOrEmpty(FileName))
-            {
-                FileName = RubyqFile;
-            }
-            else
-            {
-                DirName = Path.GetDirectoryName(FileName);
-            }
-            File.WriteAllText(FileName, editor.Text, Encoding.UTF8);
-
-            // Execute current code
-            Process p = new Process();
-            p.StartInfo.UseShellExecute = false;
-            p.StartInfo.StandardOutputEncoding = Encoding.UTF8;
-            p.StartInfo.RedirectStandardInput = true;
-            p.StartInfo.RedirectStandardOutput = true;
-            p.StartInfo.RedirectStandardError = true;
-            p.StartInfo.WorkingDirectory = DirName;
-            p.StartInfo.FileName = RubyExecutable;
-            p.StartInfo.Arguments = "-Ku " + FileName;
-            p.Start();
-
-            // Display results
-            string output = p.StandardOutput.ReadToEnd();
-            output = output.Replace("\r\n", "\r");
-            output = output.Replace("\r", Environment.NewLine);
-            OutputArea.ForeColor = SystemColors.WindowText;
-            OutputArea.AppendText(output);
-
-            // Display bugs
-            string error = p.StandardError.ReadToEnd();
-            if (!string.IsNullOrEmpty(error))
-            {
-                if (OutputArea.TextLength > 0)
-                {
-                    OutputArea.AppendText(Environment.NewLine);
-                }
-                error = Environment.NewLine + error.Replace("\n", Environment.NewLine);
-                error = error.Replace(Environment.NewLine + RubyqFile + ":", Environment.NewLine + "Line ");
-                error = error.Replace(Environment.NewLine + RubyqFile.Replace(@"\", "/") + ":", Environment.NewLine + "Line ");
-                OutputArea.SelectionColor = Color.Red;
-                OutputArea.AppendText(error);
-            }
-
-            // Fits console display
-            OutputArea.SelectionStart = OutputArea.TextLength;
-            OutputArea.ScrollToCaret();
-
-            // Unfreeze UI
-            ResetForm(true);
-        }
-
         private void FileShell()
         {
             editor.Focus();
@@ -478,10 +310,6 @@ namespace Rubyq
                 ResetTitle();
                 editor.Focus();
             }
-            else
-            {
-                OutputArea.Clear();
-            }
             InputArea.Refresh();
         }
 
@@ -555,16 +383,6 @@ namespace Rubyq
             HasChanged = false;
             ResetTitle();
             ResetPosition();
-        }
-
-        private void OutputArea_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-            {
-                var gets = OutputArea.Text.Substring(consoleIndex);
-                if (CRemoteShell != null) CRemoteShell.Execute(gets);
-            }
-
         }
     }
 }

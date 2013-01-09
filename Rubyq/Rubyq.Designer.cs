@@ -175,7 +175,6 @@
             this.OutputArea.Size = new System.Drawing.Size(619, 123);
             this.OutputArea.TabIndex = 0;
             this.OutputArea.Text = "";
-            this.OutputArea.KeyDown += new System.Windows.Forms.KeyEventHandler(this.OutputArea_KeyDown);
             // 
             // Rubyq
             // 

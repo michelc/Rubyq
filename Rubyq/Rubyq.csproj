@@ -46,7 +46,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CRemoteShell.cs" />
     <Compile Include="QEditor.cs" />
     <Compile Include="Rubyq.cs">
       <SubType>Form</SubType>
