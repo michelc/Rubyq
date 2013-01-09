@@ -4,16 +4,17 @@ using System.Text;
 
 namespace Rubyq
 {
-    public static class CRemoteShell
+    public class CRemoteShell
     {
-        private static Process _process;
-        public static event DataReceivedEventHandler StdOut = null;
-        public static event DataReceivedEventHandler StdError = null;
+        private Process _process;
+        public event DataReceivedEventHandler StdOut = null;
+        public event DataReceivedEventHandler StdError = null;
+        public event EventHandler StdExit = null;
 
         /// <summary>
         /// Initializes this instance.
         /// </summary>
-        public static void Initialize(string command, string arguments, string dir)
+        public void Initialize(string command, string arguments, string dir)
         {
             if (StdOut == null && StdError == null)
                 return;
@@ -51,17 +52,18 @@ namespace Rubyq
 
             _process.ErrorDataReceived += StdError;
             _process.OutputDataReceived += StdOut;
+            _process.Exited += StdExit;
             _process.Start();
             _process.PriorityClass = ProcessPriorityClass.AboveNormal;
 
-            if (StdError != null)
-                _process.BeginErrorReadLine();
-
             if (StdOut != null)
                 _process.BeginOutputReadLine();
+
+            if (StdError != null)
+                _process.BeginErrorReadLine();
         }
 
-        public static bool HasExited()
+        public bool HasExited()
         {
             // _process.WaitForExit();
             return _process.HasExited;
@@ -71,7 +73,7 @@ namespace Rubyq
         /// Executes the specified command.
         /// </summary>
         /// <param name="command">The command.</param>
-        public static void Execute(string command)
+        public void Execute(string command)
         {
             if (_process == null || (StdOut == null && StdError == null) || _process.HasExited)
             {
@@ -88,7 +90,7 @@ namespace Rubyq
         /// <summary>
         /// Terminates the process tree (including the parent and the children).
         /// </summary>
-        public static void Terminate()
+        public void Terminate()
         {
             if (_process == null)
                 return;

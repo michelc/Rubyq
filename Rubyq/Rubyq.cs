@@ -20,6 +20,7 @@ namespace Rubyq
 
         protected bool running = false;
         protected int consoleIndex = 0;
+        protected CRemoteShell CRemoteShell;
 
         public Rubyq()
         {
@@ -59,7 +60,7 @@ namespace Rubyq
         {
             editor.Focus();
 
-            CRemoteShell.Terminate();
+            if (CRemoteShell != null) CRemoteShell.Terminate();
             
             // Always save current text as temp file for next running
             File.WriteAllText(RubyqFile, editor.Text, Encoding.UTF8);
@@ -191,8 +192,7 @@ namespace Rubyq
         /// </summary>
         private void FileStop()
         {
-            CRemoteShell.Terminate();
-
+            if (CRemoteShell != null) CRemoteShell.Terminate();
             Run.Text = "Run";
             running = false;
 
@@ -206,17 +206,12 @@ namespace Rubyq
         {
             editor.Focus();
 
-            // Freeze UI
-            // ResetForm(false);
+            CRemoteShell = new CRemoteShell();
             running = true;
             Run.Text = "Stop";
 
             OutputArea.Focus();
-            if (OutputArea.TextLength > 0)
-            {
-                OutputArea.AppendText(Environment.NewLine);
-            }
-            consoleIndex = OutputArea.SelectionStart;
+            OutputText("-----", Color.Black, true);
 
             // Save current code in temp file
             string FileName = editor.FileName;
@@ -233,46 +228,46 @@ namespace Rubyq
 
             // Execute current code
             Rubyq.CheckForIllegalCrossThreadCalls = false;
-            // OutputArea.CheckForIllegalCrossThreadCalls = false;
             CRemoteShell.StdError += CRemoteShell_StdError;
             CRemoteShell.StdOut += CRemoteShell_StdOut;
+            CRemoteShell.StdExit += CRemoteShell_StdExit;
             CRemoteShell.Initialize(RubyExecutable, " " + FileName, DirName);
-            // CRemoteShell.Initialize(RubyExecutable, "-Ku " + FileName, DirName);
-            // CRemoteShell.Execute(RubyExecutable + " -Ku " + FileName);
 
-            /*
-            OutputArea.AppendText("Enter any command to execute. Type 'exit' to terminate this process:\n");
-            while (true)
+            OutputArea.Refresh();
+        }
+
+        private void OutputText(string text, Color color, bool newLine)
+        {
+            if (newLine)
             {
-                string userInput = Console.ReadLine();
-                if (userInput == "exit")
-                    break;
-
-                CRemoteShell.Execute(userInput);
+                if (OutputArea.GetFirstCharIndexOfCurrentLine() != OutputArea.SelectionStart)
+                {
+                    OutputArea.AppendText(Environment.NewLine);
+                }
             }
-            */
 
-            /*
-            while (!CRemoteShell.HasExited()) { }
+            OutputArea.SelectionStart = OutputArea.Text.Length;
+            OutputArea.SelectionColor = color;
+            OutputArea.AppendText(text);
+            OutputArea.AppendText(Environment.NewLine);
 
-            CRemoteShell.Terminate();
+            OutputArea.Refresh();
+            consoleIndex = OutputArea.SelectionStart;
+        }
 
-            // Unfreeze UI
-            ResetForm(true);
-            */
+        private void CRemoteShell_StdExit(object sender, EventArgs e)
+        {
+            System.Threading.Thread.Sleep(100);
+            OutputText("<Exécution terminée>", Color.Green, true);
+            
+            FileStop();
         }
 
         private void CRemoteShell_StdOut(object sender, System.Diagnostics.DataReceivedEventArgs e)
         {
             if (e.Data != null)
             {
-                string line = e.Data;
-                line = line.Replace("\n", Environment.NewLine);
-                OutputArea.SelectionColor = Color.Black;
-                OutputArea.AppendText(line);
-                OutputArea.AppendText(Environment.NewLine);
-                consoleIndex = OutputArea.SelectionStart;
-                OutputArea.Refresh();
+                OutputText(e.Data, Color.Black, false);
             }
         }
 
@@ -280,13 +275,7 @@ namespace Rubyq
         {
             if (e.Data != null)
             {
-                string line = e.Data;
-                line = line.Replace("\n", Environment.NewLine);
-                OutputArea.SelectionColor = Color.Red;
-                OutputArea.AppendText(line);
-                OutputArea.AppendText(Environment.NewLine);
-                consoleIndex = OutputArea.SelectionStart;
-                OutputArea.Refresh();
+                OutputText(e.Data, Color.Red, true);
             }
         }
 
@@ -573,10 +562,9 @@ namespace Rubyq
             if (e.KeyCode == Keys.Enter)
             {
                 var gets = OutputArea.Text.Substring(consoleIndex);
-                CRemoteShell.Execute(gets);
+                if (CRemoteShell != null) CRemoteShell.Execute(gets);
             }
 
         }
-
     }
 }
