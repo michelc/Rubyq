@@ -73,7 +73,7 @@ namespace Rubyq
                 switch (e.KeyCode)
                 {
                     case Keys.F5:
-                        if (Run.Enabled) FileShell();
+                        if (Run.Enabled) FileRun();
                         break;
                     case Keys.N:
                         if (New.Enabled) FileNew();
@@ -101,12 +101,7 @@ namespace Rubyq
 
         private void Run_Click(object sender, EventArgs e)
         {
-            FileShell();
-        }
-
-        private void Shell_Click(object sender, EventArgs e)
-        {
-            FileShell();
+            FileRun();
         }
 
         private void New_Click(object sender, EventArgs e)
@@ -176,7 +171,7 @@ namespace Rubyq
         /// <summary>
         /// Execute current code
         /// </summary>
-        private void FileShell()
+        private void FileRun()
         {
             editor.Focus();
 
@@ -289,7 +284,6 @@ namespace Rubyq
             }
             this.Text = title;
             Run.Enabled = !editor.IsEmpty;
-            Shell.Enabled = !editor.IsEmpty;
             Save.Enabled = !editor.IsOriginal && !editor.IsEmpty;
         }
 
@@ -301,7 +295,6 @@ namespace Rubyq
         {
             editor.Enabled = enabled;
             Run.Enabled = enabled;
-            Shell.Enabled = enabled;
             New.Enabled = enabled;
             Open.Enabled = enabled;
             Save.Enabled = enabled;
